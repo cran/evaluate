@@ -8,16 +8,10 @@
 plot_snapshot <- local({ 
   last_plot <- NULL
   
-  take_snapshot <- function() {
-    structure(
-      .Internal(getSnapshot()),
-      version = grDevices:::rversion(),
-      class = "recordedplot"
-    )
-  }
-  
   function() {
-    plot <- take_snapshot()
+    if (is.null(dev.list())) return(NULL)
+    
+    plot <- recordPlot()
     if (identical(plot, last_plot)) return(NULL)
     
     last_plot <<- plot
@@ -35,7 +29,8 @@ is.empty <- function(x) {
 
 plot_calls <- function(plot) {
   prims <- lapply(plot[[1]], "[[", 1)
-  chars <- sapply(prims, deparse)
+  if (length(prims) == 0) return()
   
-  gsub(".Primitive\\(\"|\"\\)", "", chars)
+  chars <- sapply(prims, deparse)
+  str_replace_all(chars, ".Primitive\\(\"|\"\\)", "")
 }
