@@ -13,18 +13,20 @@ watchout <- function(debug = FALSE) {
   
   list(
     get_new = function() {
+      incomplete <- isIncomplete(con)
+      if (incomplete) cat("\n")
+      
       out <- list()
       if (length(output) != length(prev)) {
         new <- output[setdiff(seq_along(output), seq_along(prev))]
         prev <<- output
         
-        out$text <- paste(paste(new, collapse="\n"), "\n", sep = "")
+        out$text <- str_c(new, collapse = "\n")
+        if (!incomplete) out$text <- str_c(out$text, "\n")
       }
 
-      graphics <- plot_snapshot()
-      if (!is.null(graphics)) {
-        out$graphics <- graphics
-      }
+      out$graphics <- plot_snapshot()
+
       unname(out)
     },
     pause = function() sink(),

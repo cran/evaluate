@@ -13,15 +13,16 @@
 #' @param envir environment in which to evaluate expressions
 #' @param enclos when \code{envir} is a list or data frame, this is treated
 #'   as the parent environment to \code{envir}.
+#' @import stringr
 evaluate <- function(input, envir = parent.frame(), enclos = NULL) {  
   parsed <- parse_all(input)
   
   # Use undocumented null graphics device to avoid plot windows opening
   # Thanks to Paul Murrell
-  .Call("R_GD_nullDevice", PACKAGE = "grDevices")
-  dev.control("enable")
-  plot_snapshot()
-  on.exit(dev.off())
+  # .Call("R_GD_nullDevice", PACKAGE = "grDevices")
+  # dev.control("enable")
+  # plot_snapshot()
+  # on.exit(dev.off())
   
   unlist(mapply(eval.with.details, parsed$expr, parsed$src, 
     MoreArgs = list(envir = envir, enclos = enclos), SIMPLIFY = FALSE), 
@@ -30,7 +31,7 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL) {
 
 eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src = NULL) {
   if (missing(src)) {
-    src <- paste(deparse(substitute(expr)), collapse="")
+    src <- str_c(deparse(substitute(expr)), collapse="")
   }
 
   # No expression, just source code
@@ -68,10 +69,14 @@ eval.with.details <- function(expr, envir = parent.frame(), enclos = NULL, src =
     .Internal(eval.with.vis(expr, envir, enclos)),
     warning = wHandler, error = eHandler, message = mHandler), silent = TRUE
   )
-
   output <- c(output, w$get_new())
+
+  # If visible, print and capture output
   if (ev$visible) {
-    output <- c(output, list(new_value(ev$value)))
+    try(withCallingHandlers(print(ev$value), warning = wHandler, 
+      error = eHandler, message = mHandler), silent = TRUE)
+    output <- c(output, w$get_new())
   }
+    
   output
 }
