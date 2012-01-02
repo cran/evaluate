@@ -1,6 +1,6 @@
-4a0dcf49fa0f03b3f11cafcbbecf521e *DESCRIPTION
+4a5c795cbf0c6ebd0848968af48a5f16 *DESCRIPTION
 d19f88187245f038feb2f1e58abeb0e4 *NAMESPACE
-d605d9d6fef51ffa5c4ca07b4925f030 *NEWS
+119f2bfb005badc1b50dd27dee8b0438 *NEWS
 23785280d8bc8f07140aaa5146539927 *R/eval.r
 8057e0f199535b34ffd1cd1e47a5bf29 *R/graphics.r
 55c18dc77fa08eaefbb497d1a2afaff9 *R/output.r
@@ -35,4 +35,4 @@ b41ab3ad173137c616b48119128233f6 *man/is.message.Rd
 3cd87226161e1bd4488a58df6bb071f3 *man/replay.Rd
 cab662e8c93900449a6bae3d95674e4e *man/try_capture_stack.Rd
 216199b9b2006b9dd93488e608ca4c6e *man/watchout.Rd
-8ebfbae8f88aea530f7ca5b9ebd05983 *tests/test-all.R
+e894059a96d5dfc09bbaf3a527123390 *tests/test-all.R
