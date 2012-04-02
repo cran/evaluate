@@ -1,10 +1,10 @@
-4a5c795cbf0c6ebd0848968af48a5f16 *DESCRIPTION
+2b02cd9c4a9a44db9f3206b9bd363b8f *DESCRIPTION
 d19f88187245f038feb2f1e58abeb0e4 *NAMESPACE
 119f2bfb005badc1b50dd27dee8b0438 *NEWS
-23785280d8bc8f07140aaa5146539927 *R/eval.r
+c820cb9e87f10111979849f17ee30fdd *R/eval.r
 8057e0f199535b34ffd1cd1e47a5bf29 *R/graphics.r
 55c18dc77fa08eaefbb497d1a2afaff9 *R/output.r
-9c12a303fbded744534ff20fb30b0169 *R/parse.r
+d2d190c998f28bed6bcc22b143e14230 *R/parse.r
 3e68da5a0de07ad867166638b941b91b *R/replay.r
 b4eb7ce9178541169cd4bde7b0cf3207 *R/src-region.r
 782c3fe57c23f078b259dcf1c032656b *R/traceback.r
