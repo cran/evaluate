@@ -1,7 +1,7 @@
-2b02cd9c4a9a44db9f3206b9bd363b8f *DESCRIPTION
+3c3651169d0b19cdf8f6f6907cfa7a2d *DESCRIPTION
 d19f88187245f038feb2f1e58abeb0e4 *NAMESPACE
-119f2bfb005badc1b50dd27dee8b0438 *NEWS
-c820cb9e87f10111979849f17ee30fdd *R/eval.r
+ab9eac767e37bb3f9c4f591fa8b5125f *NEWS
+b9e30a64f65dab12e43777b3c61e3f21 *R/eval.r
 8057e0f199535b34ffd1cd1e47a5bf29 *R/graphics.r
 55c18dc77fa08eaefbb497d1a2afaff9 *R/output.r
 d2d190c998f28bed6bcc22b143e14230 *R/parse.r
@@ -26,7 +26,7 @@ d493c95ee1b1a6f33befcbb5375c1586 *inst/tests/test-graphics.r
 ee541fa572e686a27f0369207d178f50 *inst/tests/test-output.r
 16b2384694552ddf2c5fcb29d97acaa9 *inst/tests/test-parse.r
 4c779868731b3af66f5a0adb94446f36 *man/create_traceback.Rd
-0888b7b7c139ffc09b32ea04b58495e0 *man/evaluate.Rd
+31efa36b0feed6b0c426ef9514de64c0 *man/evaluate.Rd
 07f229445f8f7c685fa3c2830afa5a38 *man/getSrcRegion.Rd
 b41ab3ad173137c616b48119128233f6 *man/is.message.Rd
 982b7a2912af7918782002b669c348e4 *man/line_prompt.Rd
