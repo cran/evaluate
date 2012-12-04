@@ -5,7 +5,7 @@
 #'
 #' @param x object to parse.  Can be a string, a file connection, or a
 #'   function
-#' @return a data.frame with columns \code{src}, the source code, and 
+#' @return a data.frame with columns \code{src}, the source code, and
 #'   \code{eval}
 #' @export
 #' @S3method parse_all character
@@ -15,27 +15,26 @@
 parse_all <- function(x) UseMethod("parse_all")
 
 parse_all.character <- function(x) {
-  string <- str_c(x, collapse = "\n")
-  src <- srcfilecopy("<text>", string)
-  
-  expr <- parse(text = string, srcfile = src)
+  x <- unlist(str_split(x, "\n"), recursive = FALSE, use.names = FALSE)
+  src <- srcfilecopy("<text>", x)
+
+  expr <- parse(text = x, srcfile = src)
   # No code, all comments
   if (length(expr) == 0) {
-    lines <- strsplit(string, "\n")[[1]]
-    n <- length(lines)
+    n <- length(x)
     return(data.frame(
-      x1 = seq_along(lines), x2 = seq_along(lines), 
-      y1 = rep(0, n), y2 = nchar(lines),
-      src = lines, text = rep(TRUE, n),
-      expr = I(rep(list(NULL), n)), visible = rep(FALSE, n), 
+      x1 = seq_along(x), x2 = seq_along(x),
+      y1 = rep(0, n), y2 = nchar(x),
+      src = x, text = rep(TRUE, n),
+      expr = I(rep(list(NULL), n)), visible = rep(FALSE, n),
       stringsAsFactors = FALSE
     ))
   }
-  
+
   srcref <- attr(expr, "srcref")
   srcfile <- attr(srcref[[1]], "srcfile")
 
-  # Create data frame containing each expression and its 
+  # Create data frame containing each expression and its
   # location in the original source
   src <- sapply(srcref, function(src) str_c(as.character(src), collapse="\n"))
   pos <- t(sapply(srcref, unclass))[, 1:4, drop = FALSE]
@@ -43,7 +42,7 @@ parse_all.character <- function(x) {
   pos <- as.data.frame(pos)[c("x1","y1","x2","y2")]
 
   parsed <- data.frame(
-    pos, src=src, expr=I(expr), text = FALSE, 
+    pos, src=src, expr=I(as.list(expr)), text = FALSE,
     stringsAsFactors = FALSE
   )
   # Extract unparsed text ----------------------------------------------------
@@ -51,7 +50,7 @@ parse_all.character <- function(x) {
   #  * text before first expression
   #  * text between expressions
   #  * text after last expression
-  # 
+  #
   # Unparsed text does not contain any expressions, so can
   # be split into individual lines
 
@@ -63,11 +62,11 @@ parse_all.character <- function(x) {
       lines <- ""
       n <- 1
     }
-    
+
     data.frame(
-      x1 = x1 + seq_len(n) - 1, y1 = c(y1, rep(1, n - 1)), 
-      x2 = x1 + seq_len(n), y2 = rep(1, n), 
-      src = lines, 
+      x1 = x1 + seq_len(n) - 1, y1 = c(y1, rep(1, n - 1)),
+      x2 = x1 + seq_len(n), y2 = rep(1, n),
+      src = lines,
       expr = I(rep(list(NULL), n)),
       stringsAsFactors=FALSE
     )
@@ -78,35 +77,35 @@ parse_all.character <- function(x) {
     x2 = c(parsed[1, "x1"], parsed[-1, "x1"], Inf),
     y2 = c(parsed[, "y1"], Inf)
   )
-  unparsed <- do.call("rbind", 
+  unparsed <- do.call("rbind",
     apply(breaks, 1, function(row) do.call("get_region", as.list(row)))
   )
   unparsed <- subset(unparsed, src != "")
 
-  if (nrow(unparsed) > 0) {    
+  if (nrow(unparsed) > 0) {
     unparsed$text <- TRUE
     all <- rbind(parsed, unparsed)
   } else {
     all <- parsed
   }
   all <- all[do.call("order", all[,c("x1","y1", "x2","y2")]), ]
-  
+
   all$eol <- FALSE
   all$eol[grep("\n$", all$src)] <- TRUE
-  
+
   # Join lines ---------------------------------------------------------------
   # Expressions need to be combined to create a complete line
-  # Some expressions already span multiple lines, and these should be 
+  # Some expressions already span multiple lines, and these should be
   # left alone
-  
+
   join_pieces <- function(df) {
     clean_expr <- Filter(Negate(is.null), as.list(df$expr))
     if (length(clean_expr) == 0) {
-      clean_expr <- list(NULL) 
+      clean_expr <- list(NULL)
     } else {
       clean_expr <- list(clean_expr)
     }
-    
+
     with(df, data.frame(
       src = str_c(src, collapse = ""),
       expr = I(clean_expr),
