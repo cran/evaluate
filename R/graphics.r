@@ -1,6 +1,6 @@
 #" Capture snapshot of current device.
 #"
-#" There"s currently no way to capture when a graphics device changes,
+#" There's currently no way to capture when a graphics device changes,
 #" except to check its contents after the evaluation of every expression.
 #" This means that only the last plot of a series will be captured.
 #"
@@ -38,30 +38,41 @@ is_par_change <- function(p1, p2) {
   if (!identical(calls1, calls2[1:n1])) return(FALSE)
 
   last <- calls2[(n1 + 1):n2]
-  all(last %in% c("layout", "par", ".External2"))
+  all(last %in% empty_calls)
 }
 
+# R 3.0 has significant changes in display lists
+isR3 <- getRversion() >= "3.0.0"
 
-par_added <- function(a, b) {
-  n_a <- length(a[[1]])
-  n_b <- length(b[[1]])
-
-  # Has more than one additional element
-  if (n_a != n_b - 1) return(FALSE)
-
-
-
-  lapply(plot[[1]], "[[", 1)
-}
+# if all calls are in these elements, the plot is basically empty
+empty_calls <- if (isR3) c("C_par", "C_layout", "palette", "palette2") else
+  c("layout", "par")
 
 is.empty <- function(x) {
   if(is.null(x)) return(TRUE)
 
-  drawing <- setdiff(plot_calls(x), c("plot.new", "plot.window", "par"))
-  length(drawing) == 0
+  pc <- plot_calls(x)
+  if (length(pc) == 0) return(TRUE)
+
+  if (isR3) all(pc %in% empty_calls) else {
+    !identical(pc, "recordGraphics") && !identical(pc, "persp") &&
+      !identical(pc, "plot.new") &&
+      (length(pc) <= 1L || all(pc %in% empty_calls))
+  }
 }
 
-plot_calls <- function(plot) {
+
+plot_calls <- if (isR3) {
+  function(plot) {
+    el <- lapply(plot[[1]], "[[", 2)
+    if (length(el) == 0) return()
+    sapply(el, function(x) {
+      x <- x[[1]]
+      # grid graphics do not have x$name
+      if (is.null(x[["name"]])) deparse(x) else x[["name"]]
+    })
+  }
+} else function(plot) {
   prims <- lapply(plot[[1]], "[[", 1)
   if (length(prims) == 0) return()
 

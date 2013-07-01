@@ -33,16 +33,28 @@ test_that("S4 methods are displayed with show, not print", {
   expect_equal(ev[[2]], "B")
 })
 
-if (dev.interactive()) {
+test_that("errors during printing visible values are captured", {
+  setClass("A", contains = "function")
+  setMethod("show", "A", function(object) stop("B"))
+  a <- new('A', function() b)
 
-  test_that("output and plots interleaved correctly", {
-    ev <- evaluate(file("interleave-1.r"))
-    expect_equal(classes(ev),
-      c("source", "character", "recordedplot", "character", "recordedplot"))
+  ev <- evaluate("a")
+  stopifnot("error" %in% class(ev[[2]]))
+})
 
-    ev <- evaluate(file("interleave-2.r"))
-    expect_equal(classes(ev),
-      c("source", "recordedplot", "character", "recordedplot", "character"))
-  })
+op <- options(device = function(...) {
+  pdf(file = NULL)
+  dev.control("enable")
+})
 
-}
+test_that("output and plots interleaved correctly", {
+  ev <- evaluate(file("interleave-1.r"))
+  expect_equal(classes(ev),
+               c("source", "character", "recordedplot", "character", "recordedplot"))
+
+  ev <- evaluate(file("interleave-2.r"))
+  expect_equal(classes(ev),
+               c("source", "recordedplot", "character", "recordedplot", "character"))
+})
+
+options(op)

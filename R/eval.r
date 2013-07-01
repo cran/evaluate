@@ -42,6 +42,7 @@ evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE
   if (new_device) {
     # Start new graphics device and clean up afterwards
     dev.new()
+    dev.control(displaylist = "enable")
     dev <- dev.cur()
     on.exit(dev.off(dev))
   }
@@ -103,6 +104,7 @@ evaluate_call <- function(call, src = NULL,
     handle_output(TRUE)
   }
   old_hooks <- set_hooks(list(
+    persp = capture_plot,
     before.plot.new = capture_plot,
     before.grid.newpage = capture_plot))
   on.exit(set_hooks(old_hooks, "replace"), add = TRUE)
@@ -142,14 +144,14 @@ evaluate_call <- function(call, src = NULL,
 
   # If visible, process and capture output
   if (ev$visible) {
-    pv <- try(withCallingHandlers(withVisible(output_handler$value(ev$value)),
-      warning = wHandler, error = eHandler, message = mHandler), silent = TRUE)
+    pv <- list(value = NULL, visible = FALSE)
+    handle(pv <- withCallingHandlers(withVisible(output_handler$value(ev$value)),
+      warning = wHandler, error = eHandler, message = mHandler))
     handle_output(TRUE)
     # If return value visible, print and capture output
     if (pv$visible) {
-      try(withCallingHandlers(print(pv$value),
-            warning = wHandler, error = eHandler, message = mHandler),
-          silent = TRUE)
+      handle(withCallingHandlers(print(pv$value),
+             warning = wHandler, error = eHandler, message = mHandler))
       handle_output(TRUE)
     }
   }
