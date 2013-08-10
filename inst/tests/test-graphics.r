@@ -71,10 +71,28 @@ test_that("multirow graphics are captured on close", {
               equals(c(rep("source", 4), "recordedplot")))
 })
 
+test_that("plots are captured in a non-rectangular layout", {
+  ev <- evaluate(file("plot-multi-layout.r"))
+
+  expect_that(classes(ev),
+              equals(rep(c("source", "recordedplot"), c(1, 3))))
+
+  ev <- evaluate(file("plot-multi-layout2.r"))
+
+  expect_that(classes(ev),
+              equals(rep(c("source", "recordedplot"), c(4, 2))))
+})
+
 test_that("changes in parameters don't generate new plots", {
   ev <- evaluate(file("plot-par.r"))
   expect_that(classes(ev),
               equals(c("source", "recordedplot", "source", "source", "recordedplot")))
+})
+
+test_that("plots in a loop are captured even the changes seem to be from par only", {
+  ev <- evaluate(file("plot-par2.r"))
+  expect_that(classes(ev),
+              equals(c("source", "recordedplot")[c(1, 2, 1, 1, 2, 2, 2)]))
 })
 
 test_that("perspective plots are captured", {
