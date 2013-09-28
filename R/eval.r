@@ -30,7 +30,7 @@
 #' @import stringr
 evaluate <- function(input, envir = parent.frame(), enclos = NULL, debug = FALSE,
                      stop_on_error = 0L, keep_warning = TRUE, keep_message = TRUE,
-                     new_device = TRUE, output_handler = new_output_handler()) {
+                     new_device = TRUE, output_handler = default_output_handler) {
   parsed <- parse_all(input)
 
   stop_on_error <- as.integer(stop_on_error)
@@ -78,7 +78,7 @@ evaluate_call <- function(call, src = NULL,
                           output_handler = new_output_handler()) {
   if (debug) message(src)
 
-  if (is.null(call)) {
+  if (is.null(call) && !last) {
     return(list(new_source(src)))
   }
   stopifnot(is.call(call) || is.language(call) || is.atomic(call))
@@ -116,8 +116,10 @@ evaluate_call <- function(call, src = NULL,
 
   # Handlers for warnings, errors and messages
   wHandler <- if (keep_warning) function(wn) {
-    handle_condition(wn)
-    output_handler$warning(wn)
+    if (getOption("warn") >= 0) {
+      handle_condition(wn)
+      output_handler$warning(wn)
+    }
     invokeRestart("muffleWarning")
   } else identity
   eHandler <- if (use_try) function(e) {
@@ -137,23 +139,26 @@ evaluate_call <- function(call, src = NULL,
   } else {
     handle <- force
   }
-  handle(ev <- withCallingHandlers(
-    withVisible(eval(call, envir, enclos)),
-    warning = wHandler, error = eHandler, message = mHandler))
-  handle_output(TRUE)
-
-  # If visible, process and capture output
-  if (ev$visible) {
-    pv <- list(value = NULL, visible = FALSE)
-    handle(pv <- withCallingHandlers(withVisible(output_handler$value(ev$value)),
+  if (!is.null(call)) {
+    handle(ev <- withCallingHandlers(
+      withVisible(eval(call, envir, enclos)),
       warning = wHandler, error = eHandler, message = mHandler))
     handle_output(TRUE)
-    # If return value visible, print and capture output
-    if (pv$visible) {
-      handle(withCallingHandlers(print(pv$value),
-             warning = wHandler, error = eHandler, message = mHandler))
-      handle_output(TRUE)
+  }
+
+  value_handler <- output_handler$value
+  multi_args <- length(formals(value_handler)) > 1
+  # If visible or the value handler has multi args, process and capture output
+  if (ev$visible || multi_args) {
+    pv <- list(value = NULL, visible = FALSE)
+    value_fun <- if (multi_args) value_handler else {
+      function(x, visible) value_handler(x)
     }
+    handle(pv <- withCallingHandlers(withVisible(value_fun(ev$value, ev$visible)),
+      warning = wHandler, error = eHandler, message = mHandler))
+    handle_output(TRUE)
+    # If the return value is visible, save the value to the output
+    if (pv$visible) output <- c(output, list(pv$value))
   }
 
   # Always capture last plot, even if incomplete
