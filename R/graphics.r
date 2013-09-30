@@ -15,7 +15,8 @@ plot_snapshot <- local({
   function(incomplete = FALSE) {
     if (is.null(dev.list())) return(NULL)
 
-    if (par_page) {
+    # is page in par()? feature of R 3.0.2
+    if ("page" %in% getFromNamespace('.Pars', 'graphics')) {
       if (!incomplete && !par('page')) return(NULL)  # current page not complete
     } else {
       # a hack for R < 3.0.2
@@ -69,13 +70,11 @@ is_par_change <- function(p1, p2) {
 
 # R 3.0 has significant changes in display lists
 isR3 <- getRversion() >= "3.0.0"
-# is page in par()? feature of R 3.0.2
-par_page <- "page" %in% getFromNamespace('.Pars', 'graphics')
 
 # if all calls are in these elements, the plot is basically empty
 empty_calls <- if (isR3) {
   c("C_par", "C_layout", "palette", "palette2", "C_strWidth", "C_strHeight", "C_clip")
-} else c("layout", "par")
+} else c("layout", "par", "clip")
 
 is.empty <- function(x) {
   if(is.null(x)) return(TRUE)
