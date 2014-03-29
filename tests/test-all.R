@@ -1,4 +1,4 @@
 library(testthat)
 library(evaluate)
 
-test_package("evaluate")
+test_check("evaluate")
