@@ -47,11 +47,6 @@ test_that("options(warn = -1) suppresses warnings", {
   expect_that(classes(ev), equals("source"))
 })
 
-op <- options(device = function(...) {
-  pdf(file = NULL)
-  dev.control("enable")
-})
-
 test_that("output and plots interleaved correctly", {
   ev <- evaluate(file("interleave-1.r"))
   expect_equal(classes(ev),
@@ -76,4 +71,12 @@ test_that("invisible values can also be saved if value handler has two arguments
   expect_equal(classes(ev), c("source", "integer"))
 })
 
-options(op)
+test_that("multiple expressions on one line can get printed as expected", {
+  ev <- evaluate("x <- 1; y <- 2; x; y")
+  expect_equal(classes(ev), c("source", "character", "character"))
+})
+
+test_that("multiple lines of comments do not lose the terminating \\n", {
+  ev <- evaluate("# foo\n#bar")
+  expect_equal(ev[[1]][["src"]], "# foo\n")
+})
