@@ -1,3 +1,4 @@
+% Please edit documentation in R/parse.r
 \name{parse_all}
 \alias{parse_all}
 \title{Parse, retaining comments.}
@@ -10,7 +11,7 @@ function}
 }
 \value{
 a data.frame with columns \code{src}, the source code, and
-  \code{eval}
+  \code{expr}
 }
 \description{
 Works very similarly to parse, but also keeps original formatting and

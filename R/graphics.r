@@ -8,35 +8,17 @@
 #"   \code{\link[grDevices]{recordPlot}}.
 plot_snapshot <- local({
   last_plot <- NULL
-  # help decide whether to keep plots when multiple plots on one screen
-  mfg_init <- NULL
-  mfg_changed <- FALSE
 
   function(incomplete = FALSE) {
     if (is.null(dev.list())) return(NULL)
 
-    # is page in par()? feature of R 3.0.2
-    if ("page" %in% getFromNamespace('.Pars', 'graphics')) {
-      if (!incomplete && !par('page')) return(NULL)  # current page not complete
-    } else {
-      # a hack for R < 3.0.2
-      mfg <- par("mfg")
-      if (identical(mfg, rep(1L, 4)) || incomplete) {
-        mfg_init <<- NULL
-        mfg_changed <<- FALSE
-      } else {
-        # now there is a multi-col/row layout
-        if (is.null(mfg_init)) {
-          mfg_init <<- mfg
-        } else {
-          if (identical(mfg_init, mfg)) {
-            if (!mfg_changed) return(NULL)
-          } else {
-            mfg_changed <<- TRUE
-            return(NULL)
-          }
-        }
+    if (!incomplete) {
+      # par('page') is a feature of R since 3.0.2
+      if (is.null(par('page'))) {
+        warning('Please upgrade R to at least version 3.0.2')
+        return(NULL)
       }
+      if (!par('page')) return(NULL)  # current page not complete
     }
 
     plot <- recordPlot()
@@ -68,42 +50,35 @@ is_par_change <- function(p1, p2) {
   all(last %in% empty_calls)
 }
 
-# R 3.0 has significant changes in display lists
-isR3 <- getRversion() >= "3.0.0"
-
 # if all calls are in these elements, the plot is basically empty
-empty_calls <- if (isR3) {
-  c("C_par", "C_layout", "palette", "palette2", "C_strWidth", "C_strHeight", "C_clip")
-} else c("layout", "par", "clip")
+empty_calls <- c("layout", "par", "clip")
+empty_calls <- c(
+  "palette", "palette2",
+  sprintf("C_%s", c(empty_calls, "strWidth", "strHeight", "plot_window"))
+)
+
+isR2 <- getRversion() < "3.0.0"
+warnR2 <- function() {
+  if (isR2)
+    warning('Support for R 2.x has been deprecated. Please upgrade R.')
+}
 
 is.empty <- function(x) {
   if(is.null(x)) return(TRUE)
 
+  warnR2()
   pc <- plot_calls(x)
   if (length(pc) == 0) return(TRUE)
 
-  if (isR3) all(pc %in% empty_calls) else {
-    !identical(pc, "recordGraphics") && !identical(pc, "persp") &&
-      !identical(pc, "plot.new") &&
-      (length(pc) <= 1L || all(pc %in% empty_calls))
-  }
+  all(pc %in% empty_calls)
 }
 
-
-plot_calls <- if (isR3) {
-  function(plot) {
-    el <- lapply(plot[[1]], "[[", 2)
-    if (length(el) == 0) return()
-    sapply(el, function(x) {
-      x <- x[[1]]
-      # grid graphics do not have x$name
-      if (is.null(x[["name"]])) deparse(x) else x[["name"]]
-    })
-  }
-} else function(plot) {
-  prims <- lapply(plot[[1]], "[[", 1)
-  if (length(prims) == 0) return()
-
-  chars <- sapply(prims, deparse)
-  str_replace_all(chars, ".Primitive\\(\"|\"\\)", "")
+plot_calls <- function(plot) {
+  el <- lapply(plot[[1]], "[[", 2)
+  if (length(el) == 0) return()
+  sapply(el, function(x) {
+    x <- x[[1]]
+    # grid graphics do not have x$name
+    if (is.null(x[["name"]])) deparse(x) else x[["name"]]
+  })
 }
