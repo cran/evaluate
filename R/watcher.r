@@ -4,11 +4,12 @@
 #'   screen and captured.
 #' @return list containing four functions: \code{get_new}, \code{pause},
 #'  \code{unpause}, \code{close}.
+#' @keywords internal
 watchout <- function(debug = FALSE) {
   output <- vector("character")
   prev   <- vector("character")
 
-  con <- textConnection("output", "wr", local=TRUE)
+  con <- textConnection("output", "wr", local = TRUE)
   sink(con, split = debug)
 
   list(
