@@ -1,12 +1,12 @@
-0e66ea8817181da9e95e16b695409679 *DESCRIPTION
-b089c0a6e9685038a9590b2f3a42957a *NAMESPACE
-d09088b6e7429e2e33096b77ecc80dda *NEWS
-8e2af359fb49904d90ab8e503530e444 *R/eval.r
+eade1f7f6a2bdea22ff1f611fe21a676 *DESCRIPTION
+d4473909204934f34231e263822c0d73 *NAMESPACE
+2846e752fce92d6af9dc08cdce20f779 *NEWS
+72a31cc33a26878bc6d723fa282e364f *R/eval.r
 aafc2bed34385af43269af8e64f1e01e *R/graphics.r
 92ff4620dde1944914335f47d5d71b1f *R/hooks.r
-e8e15e7f645a48f4c517f38f42c0d6d1 *R/output.r
+ec72e3ca7f14677e8f3018a1be7f54d8 *R/output.r
 2b77ce28c620d49f2f73a7dc265a6ffd *R/parse.r
-ea7eb00d8b5a6fb87ca5f619af3921c2 *R/replay.r
+366c4611d6a4a99ec466e47ff4c423c0 *R/replay.r
 97f0d9e1b50256566a00cc6041282e35 *R/traceback.r
 f125b880d3078c0cba440eab42d46459 *R/watcher.r
 aa072dad614b9b059bfbc67a9620aff5 *man/create_traceback.Rd
@@ -20,6 +20,7 @@ ccca4a56f759d354810d6fbdc7d1ec99 *man/set_hooks.Rd
 c396dff730edb18ade42f74991b17909 *man/try_capture_stack.Rd
 20d5eca3698c82aa5a13354056a0547a *man/watchout.Rd
 7d1137c5d46bfb4567e5300009945ca2 *tests/test-all.R
+7916e1d386024a89d6e8c8e5aa061bd7 *tests/test-replay.R
 446d67f5fc9a97626f757fae3fefcee7 *tests/testthat/comment.r
 94750480cbfd8455ba433ab42828023e *tests/testthat/data.r
 38a0bd49c764aefce15f4844036ccf02 *tests/testthat/error-complex.r
