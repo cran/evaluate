@@ -1,12 +1,12 @@
-0a1c141313c3d7bb83abd52f18cfd72e *DESCRIPTION
+1e8ed06ce2bf67bedd20dc05025d5846 *DESCRIPTION
 5d74770859214f3b20c7bd9a25cfb2a7 *LICENSE
 d4473909204934f34231e263822c0d73 *NAMESPACE
-6e76ff21fe7c94d16ab7a5ec43a2eba6 *NEWS
-5e04c39ca4835702d84218a2190e4896 *R/eval.r
+7bd77872972646e3dc0a7fe410425547 *NEWS
+fe226bbea30192c1bff1ca8ab682fae2 *R/eval.r
 aafc2bed34385af43269af8e64f1e01e *R/graphics.r
 92ff4620dde1944914335f47d5d71b1f *R/hooks.r
 ec72e3ca7f14677e8f3018a1be7f54d8 *R/output.r
-e7212efdaf111bada4a7ddd376fc0ed7 *R/parse.r
+3e4b8dfa2b0609377dc591eae91d3db0 *R/parse.r
 366c4611d6a4a99ec466e47ff4c423c0 *R/replay.r
 97f0d9e1b50256566a00cc6041282e35 *R/traceback.r
 f125b880d3078c0cba440eab42d46459 *R/watcher.r
@@ -15,12 +15,13 @@ bd157609c45576aecb2fbbe0df07ad22 *man/evaluate.Rd
 cbb3a6af043a41a8b8b541846718d2a7 *man/is.message.Rd
 4ee15ea5836a2ddf17c4c1395e77061c *man/line_prompt.Rd
 d008953a2b0d6dd8d8953572a5b32bac *man/new_output_handler.Rd
-1cce5730116c18a0736c9ca60a15c5b5 *man/parse_all.Rd
+a08a655bde6b48ba68759a8c3dcd5ccf *man/parse_all.Rd
 ebe2aeb51e3c227e7828f4de2cc91e75 *man/replay.Rd
 ccca4a56f759d354810d6fbdc7d1ec99 *man/set_hooks.Rd
 c396dff730edb18ade42f74991b17909 *man/try_capture_stack.Rd
 20d5eca3698c82aa5a13354056a0547a *man/watchout.Rd
 7d1137c5d46bfb4567e5300009945ca2 *tests/test-all.R
+35c21d767406d7a49427a2faf25c3ddd *tests/test-parse.R
 7916e1d386024a89d6e8c8e5aa061bd7 *tests/test-replay.R
 446d67f5fc9a97626f757fae3fefcee7 *tests/testthat/comment.r
 94750480cbfd8455ba433ab42828023e *tests/testthat/data.r
@@ -53,4 +54,4 @@ ea7ff46a39730ce982233eb4a603329e *tests/testthat/plot-par2.r
 41bdf3d19acebc48429ac8120a79c757 *tests/testthat/test-graphics.r
 f558fc2fc0f097cdf455ad5cc1467240 *tests/testthat/test-output-handler.R
 f0dfe4d4709355498c1d03d06a149a7a *tests/testthat/test-output.r
-15214a37c7cd53a65131efd99c228bf6 *tests/testthat/test-parse.r
+56af2ed8ebfb5619225ca93b3a71b538 *tests/testthat/test-parse.r
