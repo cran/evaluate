@@ -6,8 +6,8 @@
 #'  \code{unpause}, \code{close}.
 #' @keywords internal
 watchout <- function(debug = FALSE) {
-  output <- vector("character")
-  prev   <- vector("character")
+  output <- character()
+  prev   <- character()
 
   con <- textConnection("output", "wr", local = TRUE)
   sink(con, split = debug)
@@ -25,8 +25,10 @@ watchout <- function(debug = FALSE) {
         if (!is.null(out$graphics)) graphics_callback(out$graphics)
       }
 
-      if (length(output) != length(prev)) {
-        new <- output[setdiff(seq_along(output), seq_along(prev))]
+      n0 <- length(prev)
+      n1 <- length(output)
+      if (n1 > n0) {
+        new <- output[n0 + seq_len(n1 - n0)]
         prev <<- output
 
         out$text <- str_c(new, collapse = "\n")
@@ -48,3 +50,20 @@ watchout <- function(debug = FALSE) {
     }
   )
 }
+
+.env = new.env()
+.env$flush_console = function() {}
+
+#' An emulation of flush.console() in evaluate()
+#'
+#' When \code{evaluate()} is evaluating code, the text output is diverted into
+#' an internal connection, and there is no way to flush that connection. This
+#' function provides a way to "flush" the connection so that any text output can
+#' be immediately written out, and more importantly, the \code{text} handler
+#' (specified in the \code{output_handler} argument of \code{evaluate()}) will
+#' be called, which makes it possible for users to know it when the code
+#' produces text output using the handler.
+#' @note This function is supposed to be called inside \code{evaluate()} (e.g.
+#'   either a direct \code{evaluate()} call or in \pkg{knitr} code chunks).
+#' @export
+flush_console = function() .env$flush_console()
