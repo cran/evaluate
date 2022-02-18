@@ -5,8 +5,16 @@
 \alias{output_handler}
 \title{Custom output handlers.}
 \usage{
-new_output_handler(source = identity, text = identity, graphics = identity, 
-    message = identity, warning = identity, error = identity, value = render)
+new_output_handler(
+  source = identity,
+  text = identity,
+  graphics = identity,
+  message = identity,
+  warning = identity,
+  error = identity,
+  value = render,
+  calling_handlers = list()
+)
 }
 \arguments{
 \item{source}{Function to handle the echoed source code under evaluation.}
@@ -25,6 +33,10 @@ new_output_handler(source = identity, text = identity, graphics = identity,
 \item{value}{Function to handle the values returned from evaluation. If it
 only has one argument, only visible values are handled; if it has more
 arguments, the second argument indicates whether the value is visible.}
+
+\item{calling_handlers}{List of \link[=withCallingHandlers]{calling handlers}.
+These handlers have precedence over the exiting handler installed
+by \code{\link[=evaluate]{evaluate()}} when \code{stop_on_error} is set to 0.}
 }
 \value{
 A new \code{output_handler} object
