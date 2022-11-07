@@ -1,7 +1,7 @@
-48504809eb2fe009740325c736741965 *DESCRIPTION
+7cd82d3929d53d80041268f2393a3039 *DESCRIPTION
 4d85b280c584cd25a3295bc0fa7c49ce *LICENSE
 437c0030837a125263825c691c0b90c7 *NAMESPACE
-964d1c88e01a57df77ac7782f58c72ae *NEWS.md
+a87766b2edfed8fa3f84207ea34b3153 *NEWS.md
 119d8afad32c5c91d91915ab767e6be6 *R/eval.r
 79a634281269e7069990dbf45244cc37 *R/graphics.r
 4d6bfdb8870799394ccb6affc752f706 *R/hooks.r
@@ -34,8 +34,8 @@ fea574ba53709e7b38a294d855011323 *tests/testthat/error.r
 24e9ae27434864fdef5901807e66ea98 *tests/testthat/example-1.r
 d3f3c08fb5fc74bab58a0b169f55c1fc *tests/testthat/ggplot-empty-1.r
 8a7d55d994d72b317ff9ae02193ad048 *tests/testthat/ggplot-empty-2.r
-19234a68f3630d7690a8232714fa5d04 *tests/testthat/ggplot-loop.r
-9792e29336dfe5fe654b91a231d4bd1e *tests/testthat/ggplot.r
+f310aa43c59911746781a02d8473689d *tests/testthat/ggplot-loop.r
+3c0b741c4cf8d6fc1275f1e8ccf86ff5 *tests/testthat/ggplot.r
 7f8df2eafe897d4ef3984fa881276903 *tests/testthat/interleave-1.r
 c46d014984f40ebdad0ee83a4c0b0666 *tests/testthat/interleave-2.r
 c887105bd174693b5ab37f3c1e92ec10 *tests/testthat/order.r
@@ -54,7 +54,7 @@ ea7ff46a39730ce982233eb4a603329e *tests/testthat/plot-par2.r
 9647c89b1105dba33f01d78992c1a5f8 *tests/testthat/plot-persp.r
 07096b6184ee44418a18cbedbe4aa5b6 *tests/testthat/plot-strwidth.r
 4cbfd1ffe04ab0562a2514f22a2e049d *tests/testthat/plot.r
-7df061829daeba528956cfd392bac1e7 *tests/testthat/raw-output.r
+5a97226527fc9998e9ca488e524b706e *tests/testthat/raw-output.r
 369084284055bfce832dc131c710e62b *tests/testthat/test-errors.r
 aff54fea8eac0750dc2171873a19bb85 *tests/testthat/test-evaluate.r
 60aa125930f1537945fcd1b7e97d51c2 *tests/testthat/test-graphics.r
