@@ -1,3 +1,8 @@
+Version 0.22
+================================================================================
+
+- Fixed a problem in the internal function `plot_calls()` that made the examples of `recordGraphics` fail to run on its help page (thanks, Kurt Hornik).
+
 Version 0.21
 ================================================================================
 
