@@ -1,9 +1,9 @@
-95a2f9d98a94fb428b8f9b5054ff78c5 *DESCRIPTION
+4b560be43129ae19fe8e21b73f94db43 *DESCRIPTION
 84608dd8acefaf79f48adad1e7e40991 *LICENSE
 437c0030837a125263825c691c0b90c7 *NAMESPACE
-a84c0bbf3c6a5407ea4cba6a49b69e1d *NEWS.md
-96e28cec049cba687a658e1a16ec7df2 *R/eval.R
-45945b076ffc9473b74db078b940bfa3 *R/graphics.R
+c6295d2a94b0b8e4ea7afa4e17d0713d *NEWS.md
+dc5ae07473133473b62eef400d9595af *R/eval.R
+6945ab5d4ace48768904ecc4589dbeaa *R/graphics.R
 4d6bfdb8870799394ccb6affc752f706 *R/hooks.R
 e49ee24616ae8edcc2ca837553a76377 *R/output.R
 b3f5a8631290640aff1459d71ff30f2a *R/parse.R
@@ -12,7 +12,7 @@ b3f5a8631290640aff1459d71ff30f2a *R/parse.R
 f87f2db625566d2932cb846108e14446 *R/watcher.R
 f1a3d412e55142fe24322d488be47167 *README.md
 edff32110e2261bbf9afba2b2448722a *man/create_traceback.Rd
-c02c87077196e3967f8ce0a93d12248a *man/evaluate.Rd
+90a90d6b04e444fa726ca01b9de5b266 *man/evaluate.Rd
 9074248c19193869668a12e4fd2cce7a *man/flush_console.Rd
 a1c41f1e7805ae35377038995878214c *man/inject_funs.Rd
 0f7a2f2d53f374175b7f4b9fb976dce1 *man/is.message.Rd
@@ -58,10 +58,9 @@ ea7ff46a39730ce982233eb4a603329e *tests/testthat/plot-par2.R
 29600f8c08dd3d369748efcd40c1e1d8 *tests/testthat/test-errors.R
 c87c5e8f3c989a67174c6bfc765c99cf *tests/testthat/test-eval.R
 2ec56e481221817690c093124df6d5d8 *tests/testthat/test-evaluate.R
-2ecbd0cd9c1e44ba29b32b7431738091 *tests/testthat/test-graphics.R
+8f4af15effbce1e4469a08f4af731953 *tests/testthat/test-graphics.R
 e2d6369b99e61fbaccaf1b0117cbb852 *tests/testthat/test-output-handler.R
 18fbc0492db272bfa9b733bf556b6a80 *tests/testthat/test-output.R
 37a963bbb956ca9b0f41ecdf4bd0b6ef *tests/testthat/test-parse.R
 9346324ce19bcde3d7aab9c83641883c *tests/testthat/test-replay.R
-e9b2a7eb6c24bf75ecca6473c041b788 *tests/testthat/testthat-problems.rds
 905d85f44018ba83d1eb33636d13b2a4 *tests/testthat/try.R
