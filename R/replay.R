@@ -1,4 +1,4 @@
-#' Replay a list of evaluated results.
+#' Replay a list of evaluated results
 #'
 #' Replay a list of evaluated results, as if you'd run them in an R
 #' terminal.
@@ -6,13 +6,25 @@
 #' @param x result from [evaluate()]
 #' @export
 #' @examples
-#' samples <- system.file("tests", "testthat", package = "evaluate")
-#' if (file_test("-d", samples)) {
-#'   replay(evaluate(file(file.path(samples, "order.R"))))
-#'   replay(evaluate(file(file.path(samples, "plot.R"))))
-#'   replay(evaluate(file(file.path(samples, "data.R"))))
+#' f1 <- function() {
+#'   cat("1\n")
+#'   print("2")
+#'   warning("3")
+#'   print("4")
+#'   message("5")
+#'   stop("6")
 #' }
-replay <- function(x) UseMethod("replay", x)
+#' replay(evaluate("f1()"))
+#'
+#' f2 <- function() {
+#'   message("Hello")
+#'   plot(1:10)
+#'   message("Goodbye")
+#' }
+#' replay(evaluate("f2()"))
+replay <- function(x) {
+  UseMethod("replay", x)
+}
 
 #' @export
 replay.list <- function(x) {
@@ -21,7 +33,7 @@ replay.list <- function(x) {
 
 #' @export
 replay.default <- function(x) {
-  render(x)
+  render(x, TRUE, parent.frame())
 }
 
 #' @export
@@ -31,33 +43,12 @@ replay.character <- function(x) {
 
 #' @export
 replay.source <- function(x) {
-  s <- if (is.null(attr(x$src,'timing'))) '' else render_timing(attr(x$src, 'timing'))
-  cat(paste0(s, line_prompt(x$src)))
+  cat(line_prompt(x$src))
 }
 
 #' @export
-replay.warning <- function(x) {
-  message("Warning message:\n", x$message)
-}
-
-#' @export
-replay.message <- function(x) {
-  message(sub("\n$", "", x$message))
-}
-
-#' @export
-replay.error <- function(x) {
-  if (is.null(x$call)) {
-    message("Error: ", x$message)
-  } else {
-    call <- deparse(x$call)
-    message("Error in ", call, ": ", x$message)
-  }
-}
-
-#' @export
-replay.value <- function(x) {
-  if (x$visible) print(x$value)
+replay.condition <- function(x) {
+  cat_line(format_condition(x))
 }
 
 #' @export
@@ -65,35 +56,26 @@ replay.recordedplot <- function(x) {
   print(x)
 }
 
-render_timing <- function(t) {
-  if (max(t) < 0.5) '' else paste0(
-    '[', render_sec(t[[1]] + t[[2]]), # User time + Kernel time
-    ',', render_sec(t[[3]]), # Wall time
-    ']'
-  )
-}
+format_condition <- function(x) {
+  if (inherits(x, "message")) {
+    return(gsub("\n$", "", conditionMessage(x)))
+  }
 
-render_sec <- function(s) {
-  if (s < 0.005) return('<5ms')
-  if (s < 1) return(paste0(round(s,2), 's'))
-  if (s < 10) return(paste0(round(s,1), 's'))
-  sec <- round(s,0)
-  if (sec < 120) return(paste0(sec, 's'))
-  min <- floor(sec/60)
-  sec <- sec - min*60
-  if (min < 10) return(paste0(
-    min, 'm', formatC(sec, digits = 0, width = 2, format = "f", flag = "0"), 's'
-  ))
-  min <- min + round(sec/60, 0)
-  if (min < 120) return(paste0(min, 'm'))
-  h <- floor(min/60)
-  min <- min - h * 60
-  if (h < 48) return(paste0(
-    h, 'h', formatC(min, digits = 0, width = 2, format = "f", flag = "0"), 'm'
-  ))
-  d <- floor(h/24)
-  h <- h - d*24
-  return(paste0(d, 'd', h, 'h'))
+  if (inherits(x, "error")) {
+    type <- "Error"
+  } else if (inherits(x, "warning")) {
+    type <- "Warning"
+  }
+
+  call <- conditionCall(x)
+  if (is.null(call)) {
+    header <- paste0(type, ":")
+  } else {
+    header <- paste0(type, " in ", deparse1(call), ":")
+  }
+
+  body <- conditionMessage(x)
+  paste0(header, "\n", body)
 }
 
 #' Line prompt.
@@ -110,8 +92,9 @@ line_prompt <- function(x, prompt = getOption("prompt"), continue = getOption("c
   n <- length(lines)
 
   lines[1] <- paste0(prompt, lines[1])
-  if (n > 1)
+  if (n > 1) {
     lines[2:n] <- paste0(continue, lines[2:n])
+  }
 
   paste0(lines, "\n", collapse = "")
 }

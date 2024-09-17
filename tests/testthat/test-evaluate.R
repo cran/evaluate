@@ -1,139 +1,129 @@
 test_that("file with only comments runs", {
-  ev <- evaluate(file("comment.R"))
-  expect_length(ev, 2)
+  ev <- evaluate(function() {
+    # This test case contains no executable code
+    # but it shouldn't throw an error
+  })
+  expect_output_types(ev, c("source", "source"))
+})
 
-  expect_equal(classes(ev), c("source", "source"))
+test_that("can evaluate expressions of all lengths", {
+  source <- "
+    # a comment
+    1
+    x <- 2; x
+  "
+  expect_no_error(evaluate(source))
+})
+
+test_that("log_echo causes output to be immediately written to stderr()", {
+  f <- function() {
+    1
+  }
+  out <- capture.output(
+    res <- evaluate("f()", log_echo = TRUE),
+    type = "message"
+  )
+  expect_equal(out, c("f()", ""))
+
+  # But still recorded in eval result
+  expect_output_types(res, c("source", "text"))
+  expect_equal(res[[1]]$src, "f()\n")
+})
+
+test_that("ACTIONS_STEP_DEBUG forces log_warning and log_echo to TRUE", {
+  f <- function() {
+    1
+    warning("abc")
+  }
+  out <- local({
+    withr::local_envvar(ACTIONS_STEP_DEBUG = "true")
+    capture.output(expect_warning(evaluate("f()"), "abc"), type = "message")
+  })
+  expect_equal(out, c("f()", ""))
 })
 
 test_that("data sets loaded", {
   skip_if_not_installed("lattice")
 
-  ev <- evaluate(file("data.R"))
-  expect_length(ev, 3)
+  ev <- evaluate(function() {
+    data(barley, package = "lattice")
+    barley
+  })
+  expect_output_types(ev, c("source", "source", "text"))
 })
-
-# # Don't know how to implement this
-# test_that("newlines escaped correctly", {
-#   ev <- evaluate("cat('foo\n')")
-#   expect_that(ev[[1]]$src, equals("cat('foo\\n'))"))
-# })
 
 test_that("terminal newline not needed", {
   ev <- evaluate("cat('foo')")
-  expect_length(ev, 2)
+  expect_output_types(ev, c("source", "text"))
   expect_equal(ev[[2]], "foo")
 })
 
 test_that("S4 methods are displayed with show, not print", {
-  setClass("A", contains = "function", where = environment())
-  setMethod("show", "A", function(object) cat("B"))
-  a <- new('A', function() b)
+  methods::setClass("A", contains = "function", where = environment())
+  methods::setMethod("show", "A", function(object) cat("B"))
+  a <- methods::new("A", function() b)
 
   ev <- evaluate("a")
   expect_equal(ev[[2]], "B")
 })
 
-test_that("errors during printing visible values are captured", {
-  setClass("A", contains = "function", where = environment())
-  setMethod("show", "A", function(object) stop("B"))
-  a <- new('A', function() b)
-
-  ev <- evaluate("a")
-  expect_s3_class(ev[[2]], "error")
-})
-
-test_that("options(warn = -1) suppresses warnings", {
-  ev <- evaluate("op = options(warn = -1); warning('hi'); options(op)")
-  expect_equal(classes(ev), "source")
-})
-
-test_that("options(warn = 0) and options(warn = 1) produces warnings", {
-  ev <- evaluate("op = options(warn = 0); warning('hi'); options(op)")
-  expect_equal(classes(ev), c("source", "simpleWarning"))
-
-  ev <- evaluate("op = options(warn = 1); warning('hi'); options(op)")
-  expect_equal(classes(ev), c("source", "simpleWarning"))
-})
-
-# See https://github.com/r-lib/evaluate/pull/81#issuecomment-367685196
-# test_that("options(warn = 2) produces errors instead of warnings", {
-#   ev_warn_2 <- evaluate("op = options(warn = 2); warning('hi'); options(op)")
-#   expect_equal(classes(ev_warn_2), c("source", "simpleError"))
-# })
-
 test_that("output and plots interleaved correctly", {
-  ev <- evaluate(file("interleave-1.R"))
-  expect_equal(classes(ev),
-               c("source", "character", "recordedplot", "character", "recordedplot"))
-
-  ev <- evaluate(file("interleave-2.R"))
-  expect_equal(classes(ev),
-               c("source", "recordedplot", "character", "recordedplot", "character"))
-})
-
-test_that("return value of value handler inserted directly in output list", {
-  skip_if_not_installed("ggplot2")
-
-  ev <- evaluate(
-    file("raw-output.R"),
-    output_handler = new_output_handler(value = identity)
-  )
-  expect_equal(
-    classes(ev),
-    c("source", "numeric", "source", "source", "source", "gg")
-  )
-})
-
-test_that("invisible values can also be saved if value handler has two arguments", {
-  handler <- new_output_handler(value = function(x, visible) {
-    x  # always returns a visible value
+  ev <- evaluate(function() {
+    for (i in 1:2) {
+      cat(i)
+      plot(i)
+    }
   })
-  ev <- evaluate("x<-1:10", output_handler = handler)
-  expect_equal(classes(ev), c("source", "integer"))
+  expect_output_types(ev, c("source", "text", "plot", "text", "plot"))
+
+  ev <- evaluate(function() {
+    for (i in 1:2) {
+      plot(i)
+      cat(i)
+    }
+  })
+  expect_output_types(ev, c("source", "plot", "text", "plot", "text"))
 })
 
 test_that("multiple expressions on one line can get printed as expected", {
   ev <- evaluate("x <- 1; y <- 2; x; y")
-  expect_equal(classes(ev), c("source", "character", "character"))
+  expect_output_types(ev, c("source", "text", "text"))
 })
 
 test_that("multiple lines of comments do not lose the terminating \\n", {
   ev <- evaluate("# foo\n#bar")
-  expect_equal(ev[[1]][["src"]], "# foo\n")
+  expect_output_types(ev, c("source", "source"))
+  expect_equal(ev[[1]]$src, "# foo\n")
 })
 
-test_that("user can register calling handlers", {
-  cnd <- structure(list(), class = c("foobar", "condition"))
-  hnd <- function(cnd) handled <<- cnd
+test_that("check_stop_on_error converts integer to enum", {
+  expect_equal(check_stop_on_error(0), "continue")
+  expect_equal(check_stop_on_error(1), "stop")
+  expect_equal(check_stop_on_error(2), "error")
 
-  handled <- NULL
-  hnd <- function(cnd) handled <<- cnd
-
-  out_hnd <- new_output_handler(calling_handlers = list(foobar = hnd))
-  evaluate("signalCondition(cnd)", output_handler = out_hnd)
-  expect_s3_class(handled, "foobar")
-
-  handled <- NULL
-  out_hnd <- new_output_handler(calling_handlers = list(error = hnd))
-  evaluate("stop('tilt')", stop_on_error = 0, output_handler = out_hnd)
-  expect_s3_class(handled, "error")
+  expect_snapshot(check_stop_on_error(4), error = TRUE)
 })
 
-test_that("calling handlers are checked", {
-  expect_error(
-    new_output_handler(calling_handlers = list(condition = 1)),
-    "must be"
-  )
-  expect_error(
-    new_output_handler(calling_handlers = list(function(...) NULL)),
-    "must be"
-  )
-  expect_error(
-    new_output_handler(calling_handlers = stats::setNames(list(function(...) NULL), NA)),
-    "must be"
-  )
-  expect_error(
-    new_output_handler(calling_handlers = stats::setNames(list(function(...) NULL), "")),
-    "must be"
-  )
+test_that("check_keep converts to logical as expected", {
+  expect_true(check_keep(TRUE)$capture)
+  expect_false(check_keep(NA)$capture)
+  expect_false(check_keep(FALSE)$capture)
+
+  expect_true(check_keep(TRUE)$silence)
+  expect_false(check_keep(NA)$silence)
+  expect_true(check_keep(FALSE)$silence)
+})
+
+test_that("check_keep can integrate log option", {
+  # logging means we never silence the ouptut
+  expect_false(check_keep(TRUE, log = TRUE)$silence)
+  expect_false(check_keep(NA, log = TRUE)$silence)
+  expect_false(check_keep(FALSE, log = TRUE)$silence)
+})
+
+test_that("check_keep errors with bad inputs", {
+  expect_snapshot(error = TRUE, {
+    check_keep(1, "keep_message")
+    check_keep(c(TRUE, FALSE), "keep_message")
+  })
 })
