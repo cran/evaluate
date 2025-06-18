@@ -1,11 +1,17 @@
-watchout <- function(handler = new_output_handler(),
-                     new_device = TRUE,
-                     debug = FALSE,
-                     frame = parent.frame()) {
+watchout <- function(
+  handler = new_output_handler(),
+  new_device = TRUE,
+  debug = FALSE,
+  frame = parent.frame()
+) {
   if (new_device) {
     # Ensure we have a graphics device available for recording, but choose
-    # one that's available on all platforms and doesn't write to disk
-    pdf(file = NULL)
+    # one that's available on all platforms and doesn't write to disk.
+    if (has_ragg()) {
+      ragg::agg_record()
+    } else {
+      pdf(file = NULL)
+    }
     dev.control(displaylist = "enable")
     dev <- dev.cur()
     defer(dev.off(dev), frame)
@@ -18,7 +24,8 @@ watchout <- function(handler = new_output_handler(),
     output[i] <<- list(value)
     i <<- i + 1
 
-    switch(output_type(value),
+    switch(
+      output_type(value),
       plot = handler$graphics(value),
       text = handler$text(value),
       message = handler$message(value),
@@ -43,6 +50,11 @@ watchout <- function(handler = new_output_handler(),
   sink_con <- local_persistent_sink_connection(debug, frame)
 
   capture_plot <- function(incomplete = FALSE) {
+    # no plots open; par("page") will open a device
+    if (is.null(dev.list())) {
+      return()
+    }
+
     # only record plots for our graphics device
     if (!identical(dev.cur(), dev)) {
       return()
@@ -120,8 +132,10 @@ watchout <- function(handler = new_output_handler(),
 
 # Persistent way to capture output ---------------------------------------------
 
-local_persistent_sink_connection <- function(debug = FALSE,
-                                             frame = parent.frame()) {
+local_persistent_sink_connection <- function(
+  debug = FALSE,
+  frame = parent.frame()
+) {
   con <- file("", "w+b")
   defer(if (isValid(con)) close(con), frame)
 
@@ -152,7 +166,9 @@ read_con <- function(con, buffer = 32 * 1024) {
   bytes <- raw()
   repeat {
     new <- readBin(con, "raw", n = buffer)
-    if (length(new) == 0) break
+    if (length(new) == 0) {
+      break
+    }
     bytes <- c(bytes, new)
   }
   if (length(bytes) == 0) {
@@ -174,4 +190,9 @@ isValid <- function(con) {
     identical(getConnection(con), con),
     error = function(cnd) FALSE
   )
+}
+
+has_ragg <- function() {
+  requireNamespace("ragg", quietly = TRUE) &&
+    exists("agg_record", getNamespace("ragg"))
 }
