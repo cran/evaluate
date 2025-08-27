@@ -1,11 +1,11 @@
-a81f4f588a40aaa75f1fbb8b8aafc298 *DESCRIPTION
+fc878b3165d7577c95df6536f6a023dc *DESCRIPTION
 84608dd8acefaf79f48adad1e7e40991 *LICENSE
 8aa475d3af1613b75abd625db0147fe6 *NAMESPACE
-99fe09db81614c3bc2cfd62369fe5511 *NEWS.md
+32efdc6e8d8e0c72c86c8e4b4bae80f8 *NEWS.md
 ac23ac4e65f2933b3c540e0b0d3801db *R/conditions.R
 321d64e22cd8a6c6767b0a925020a75b *R/evaluate-package.R
 6aa9f658766f5879fe5f97c651024935 *R/evaluate.R
-fb4a60688b2c82aa5d7acf9911291b4c *R/evaluation.R
+3a8aabb001423727a825b9109562e503 *R/evaluation.R
 474407c336f046428511912b81af882e *R/flush-console.R
 efb7e4a4438b2758532b87836581877f *R/graphics.R
 7bd2d5f21963974bf0998474ccc72dec *R/hooks.R
@@ -17,7 +17,7 @@ a9c112633858a840095c18a6cf42c151 *R/replay.R
 d5d32c5f8ecfb2baaaf8a77b7a235933 *R/reproducible-output.R
 540fb3f16f20c0056ed8b58756c5f6ab *R/traceback.R
 1415e2de88e0fa5c03a48e25e5bd17ff *R/utils.R
-8171e2ee858bdcbe01ff76a0e4a4245b *R/watchout.R
+62cb40d914d46d9400f65049cdbfb46a *R/watchout.R
 5cb0eaea51550fe601d814e36c251b6e *R/zzz.R
 5e5dc31b541d5ca17c0bf7ad6e6cd9c7 *README.md
 cb5d4f7137189a9b73d1e344e768e3f5 *man/create_traceback.Rd
